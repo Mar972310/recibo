@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#ef4a36" />
+<title>Recibo de Caja</title>
+<link rel="stylesheet" href="styles.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+</head>
+<body>
+
+<div class="modal-bg" id="modalPwd">
+  <div class="modal-card">
+    <h3>Contraseña requerida</h3>
+    <p>Ingresa la contraseña para incluir los datos personales en el PDF.</p>
+    <input type="password" id="pwdInput" placeholder="Contraseña" />
+    <div class="modal-err" id="pwdErr"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="cerrarModalPwd()">Cancelar</button>
+      <button class="btn-primary" onclick="validarPwd()">Descargar</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="panel">
+    <h2>Datos del recibo</h2>
+
+    <label>Número de recibo</label>
+    <input type="text" id="numero" placeholder="ej: 0280" />
+
+    <label>Fecha</label>
+    <input type="date" id="fecha" />
+
+    <label>Cancela (quien paga)</label>
+    <input type="text" id="cancela" placeholder="Nombre completo" />
+
+    <label>Concepto general</label>
+    <input type="text" id="concepto" placeholder="ej: Servicios de transporte" />
+
+    <label>Moneda</label>
+    <select id="moneda">
+      <option value="COP">COP — Pesos colombianos</option>
+      <option value="USD">USD — Dólares</option>
+    </select>
+
+    <label>Trayectos / Servicios</label>
+    <div class="trayectos" id="trayectos"></div>
+    <div style="display:flex; gap:6px;">
+      <button class="btn small" onclick="addTrayecto()">+ Trayecto</button>
+      <button class="btn small" onclick="addServicioHoras()">+ Servicio por horas</button>
+    </div>
+
+    <div class="total-preview">
+      Total: <b id="totalPreview">$ 0</b><br />
+      <span id="letrasPreview" style="font-size:12px; color:#666;">cero pesos</span>
+    </div>
+
+    <button class="btn" onclick="generarPDF()">Descargar PDF</button>
+    <p class="hint-mask">
+      Los campos marcados con <span class="hint-mask-sample">•••</span>
+      se completarán con los datos reales solo en el PDF, después de ingresar la contraseña.
+    </p>
+  </div>
+
+  <div>
+    <div id="recibo" class="recibo">
+      <div class="recibo-header">RECIBO DE CAJA</div>
+      <div class="recibo-body">
+        <div class="info-top">
+          <div class="field"><span class="lbl">CIUDAD:</span><span class="val">Bogotá D.C</span></div>
+          <div class="field"><span class="lbl">NUMERO RECIBO:</span><span class="val" id="rNumero"></span></div>
+          <div class="field"><span class="lbl">FECHA:</span><span class="val" id="rFecha"></span></div>
+          <div class="field"><span class="lbl">MONEDA:</span><span class="val" id="rMoneda">COP</span></div>
+          <div class="field" style="grid-column: 1 / 2;">
+            <span class="lbl">PAGADO A:</span>
+            <span class="val">
+              <span id="rNombre" class="sensible"></span><br />
+              <span id="rEmail" class="sensible"></span><br />
+              Móvil <span id="rMovil" class="sensible"></span>
+            </span>
+          </div>
+          <div class="field"><span class="lbl">VALOR:</span><span class="val" id="rValor">0</span></div>
+        </div>
+
+        <div class="recuadro">
+          <div class="seccion">
+            <span class="lbl">POR CONCEPTO DE:</span>
+            <div class="concepto-text" id="rConcepto"></div>
+            <div class="concepto-text" id="rTrayectos"></div>
+          </div>
+          <div class="seccion">
+            <span class="lbl">VALOR (en letras):</span>
+            <div class="letras" id="rLetras">cero pesos</div>
+          </div>
+          <div class="seccion" style="padding:0;">
+            <div class="firma-grid">
+              <div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <span class="lbl" style="margin:0;">APROBADO:</span>
+                  <span class="check">✓</span>
+                </div>
+              </div>
+              <div class="firma-right">
+                <div class="firma-row">
+                  <span class="lbl">FIRMA DE RECIBO:</span> <b id="rFirma" class="sensible"></b>
+                </div>
+                <div class="firma-row nit-row">
+                  <span>NIT <span class="check">✓</span></span>
+                  <span>CIF <span class="check empty"></span></span>
+                  <span>N°: <span id="rNit" class="sensible"></span></span>
+                </div>
+                <div class="firma-row">
+                  <span class="lbl">CANCELA:</span> <b id="rCancela"></b>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
